@@ -44,7 +44,11 @@
 </template>
 
 <script setup>
-const { data, pending, error } = useFetch('https://fakerapi.it/api/v2/images?_quantity=10&_type=any&_height=300')
+const images = ref([])
+// const { data, pending, error } = useFetch('https://fakerapi.it/api/v2/images?_quantity=10&_type=any&_height=300')
+const res = await fetch('https://fakerapi.it/api/v2/images?_quantity=10&_type=any&_height=300')
 
-const images = computed(() => data.value?.data || [])
+images.value = await res.json().then((body) => body.data)
+
+// const images = computed(() => data.value?.data || [])
 </script>
