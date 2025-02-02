@@ -1,0 +1,28 @@
+{
+  "name": "nuxt-app",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "dependencies": {
+    "nuxt": "^3.15.4",
+    "vue": "latest",
+    "vue-router": "latest"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.19.0",
+    "@nuxtjs/tailwindcss": "^6.13.1",
+    "eslint": "^9.19.0",
+    "eslint-plugin-vue": "^9.32.0",
+    "globals": "^15.14.0",
+    "sass-embedded": "^1.83.4",
+    "tailwind-merge": "^3.0.1",
+    "typescript-eslint": "^8.22.0",
+    "vite-svg-loader": "^5.1.0"
+  }
+}
