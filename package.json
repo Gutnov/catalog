@@ -7,12 +7,14 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "sync": "npx tsx server/models/sync.ts"
   },
   "dependencies": {
-    "nuxt": "^3.15.4",
-    "vue": "latest",
-    "vue-router": "latest"
+    "mysql2": "3.12.0",
+    "nuxt": "3.15.4",
+    "pg-hstore": "2.3.4",
+    "sequelize": "6.37.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",

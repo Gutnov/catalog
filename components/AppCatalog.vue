@@ -6,20 +6,6 @@
       </h2>
 
       <div
-        v-if="pending"
-        class="text-center text-gray-500"
-      >
-        Загружаем изображения...
-      </div>
-      <div
-        v-else-if="error"
-        class="text-center text-red-500"
-      >
-        Ошибка загрузки данных
-      </div>
-
-      <div
-        v-else
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6"
       >
         <div
@@ -43,12 +29,8 @@
   </section>
 </template>
 
-<script setup>
-const images = ref([])
-// const { data, pending, error } = useFetch('https://fakerapi.it/api/v2/images?_quantity=10&_type=any&_height=300')
-const res = await fetch('https://fakerapi.it/api/v2/images?_quantity=10&_type=any&_height=300')
-
-images.value = await res.json().then((body) => body.data)
-
-// const images = computed(() => data.value?.data || [])
+<script setup lang="ts">
+defineProps<({
+  images: Array<any>
+})>()
 </script>
