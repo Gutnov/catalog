@@ -35,7 +35,7 @@
               Каталог
             </NuxtLink>
             <NuxtLink
-              to="/contact"
+              to="/"
               class="text-gray-700 hover:text-gray-900"
             >
               Контакты

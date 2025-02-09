@@ -15,32 +15,49 @@
 </template>
 
 <script lang="ts" setup>
-import { type ICompany } from '@/types'
+import { type ICompany } from '@/dto'
+const route = useRoute()
 
 const companiesList = ref<ICompany[]>([])
 const loading = ref(false)
 const count = ref(0)
-const { data } = await useFetch('/api/companies')
-const route = useRoute()
+
+const getSearchParams = (): URLSearchParams => {
+  const page = route.query.page
+  const limit = route.query.limit
+  const sortBy = route.query.sortBy
+  const sortDirection = route.query.sortDirection
+  const queryParams = new URLSearchParams()
+  if (page && !Array.isArray(page)) {
+    queryParams.append('page', page)
+  }
+  if (limit && !Array.isArray(limit)) {
+    queryParams.append('limit', limit)
+  }
+  if (sortBy && !Array.isArray(sortBy)) {
+    queryParams.append('sortBy', sortBy)
+  }
+  if (sortDirection && !Array.isArray(sortDirection)) {
+    queryParams.append('sortDirection', sortDirection)
+  }
+  return  queryParams
+}
+
+const { data } = await useFetch(`/api/companies?${getSearchParams().toString()}`)
 
 companiesList.value = data.value?.companies as ICompany[]
 count.value = data.value?.totalCount as number
 
-watch(route, async () => { 
-  const page = Number(route.query.page) || 1
-  const limit = Number(route.query.limit) || 5
-  const sort = route.query.sort as string
-  const order = route.query.order as string
-  await changePage({ page, limit, sort, order })
+watch(route, async () => {
+  const queryParams = getSearchParams()
+  await changePage(queryParams)
 }, { deep: true })
 
-const changePage = async ({ page, limit, sort, order }: { page: number, limit: number, sort: string, order: string }) => {
+const changePage = async (queryParams: URLSearchParams) => {
   loading.value = true
-  const { companies, totalCount }  = await $fetch(`/api/companies?page=${page}&limit=${limit}&sort=${sort}&order=${order}`)
+  const { companies, totalCount }  = await $fetch(`/api/companies?${queryParams.toString()}`)
   count.value = totalCount
   companiesList.value = companies as ICompany[]
   loading.value = false
 }
-
-
 </script>

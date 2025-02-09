@@ -1,8 +1,7 @@
-import { Model, DataTypes } from 'sequelize'
+import { Model, DataTypes, InferAttributes, InferCreationAttributes } from 'sequelize'
 import sequelize from '~/server/models/db'
-import { type ICompany } from '@/types'
 
-export class Company extends Model<ICompany> {
+export class Company extends Model<InferAttributes<Company>, InferCreationAttributes<Company>> {
   declare id: number
   declare name: string
   declare createdYear: number

@@ -2,6 +2,8 @@
   <div class="companies-table">
     <VDataTableServer
       v-model:items-per-page="itemsPerPage"
+      v-model:page="page"
+      :items-per-page-options="[DEFAULT_COMPANIES_LIMIT, 10, 25, 50, 100]"
       :headers="headers"
       :items="list"
       :items-length="count"
@@ -13,7 +15,15 @@
 </template>
 
 <script lang="ts" setup>
-import { type ICompany } from '@/types'
+import type { VDataTableServer } from 'vuetify/components/VDataTable'
+import { type ICompany, type CompaniesQuery } from '@/dto'
+
+import {
+  DEFAULT_COMPANIES_LIMIT,
+  DEFAULT_COMPANIES_PAGE
+} from '~/settings'
+
+type Options = InstanceType<typeof VDataTableServer>['$options']
 
 defineProps<({
   list: Array<ICompany>
@@ -24,9 +34,17 @@ defineProps<({
 const router = useRouter()
 const route = useRoute()
 
-const itemsPerPage = ref(5)
+const itemsPerPage = ref(route.query.limit && !Array.isArray(route.query.limit)
+  ? route.query.limit
+  : DEFAULT_COMPANIES_LIMIT
+)
 
-const headers = [
+const page = ref(route.query.page && !Array.isArray(route.query.page)
+  ? route.query.page
+  : DEFAULT_COMPANIES_PAGE
+)
+
+const headers: InstanceType<typeof VDataTableServer>['headers']= [
   {
     align: 'start',
     key: 'id',
@@ -44,11 +62,18 @@ const headers = [
   { key: 'createdYear', title: 'Год основания', sortable: true, value: 'createdYear' }
 ]
 
-const loadItems = ({ page, itemsPerPage, sortBy }: { page: number, itemsPerPage: number, sortBy: Array<{ key: string, order: string }> }) => {
-  router.push({ query: { ...route.query, page, limit: itemsPerPage } })
+const loadItems = ({ page, itemsPerPage, sortBy }: Options) => {
+  const newQuery: CompaniesQuery = {}
   if (sortBy.length) {
-    router.push({ query: { ...route.query, sort: sortBy[0].key, order: sortBy[0].order } })
+    newQuery.sortBy = sortBy[0].key
+    newQuery.sortDirection = sortBy[0].order
   }
+  if (route.query.page || page !== DEFAULT_COMPANIES_PAGE) {
+    newQuery.page = page
+  }
+  if (itemsPerPage !== DEFAULT_COMPANIES_LIMIT) {
+    newQuery.limit = itemsPerPage
+  }
+  router.push({ query: { ...newQuery } })
 }
-
 </script>
