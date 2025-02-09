@@ -1,6 +1,6 @@
 import { Model, DataTypes } from 'sequelize'
 import sequelize from '~/server/models/db'
-import {type ICompany} from '@/types'
+import { type ICompany } from '@/types'
 
 export class Company extends Model<ICompany> {
   declare id: number
@@ -19,7 +19,7 @@ Company.init({
   },
   createdYear: {
     type: DataTypes.INTEGER,
-    defaultValue: 2025,
+    defaultValue: new Date().getFullYear(),
     allowNull: false
   }
 }, {

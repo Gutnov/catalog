@@ -17,22 +17,30 @@
 <script lang="ts" setup>
 import { type ICompany } from '@/types'
 
-const currentPage = ref(1)
 const companiesList = ref<ICompany[]>([])
 const loading = ref(false)
 const count = ref(0)
 const { data } = await useFetch('/api/companies')
+const route = useRoute()
 
-companiesList.value = data.value?.data as ICompany[]
-count.value = data.value?.pagination.count as number
+companiesList.value = data.value?.companies as ICompany[]
+count.value = data.value?.totalCount as number
 
+watch(route, async () => { 
+  const page = Number(route.query.page) || 1
+  const limit = Number(route.query.limit) || 5
+  const sort = route.query.sort as string
+  const order = route.query.order as string
+  await changePage({ page, limit, sort, order })
+}, { deep: true })
 
-const changePage = async ({ page, limit }: { page: number, limit: number }) => {
+const changePage = async ({ page, limit, sort, order }: { page: number, limit: number, sort: string, order: string }) => {
   loading.value = true
-  currentPage.value = page
-  const { data, pagination }  = await $fetch(`/api/companies?page=${currentPage.value}&limit=${limit}`)
-  count.value = pagination.count
-  companiesList.value = data as ICompany[]
+  const { companies, totalCount }  = await $fetch(`/api/companies?page=${page}&limit=${limit}&sort=${sort}&order=${order}`)
+  count.value = totalCount
+  companiesList.value = companies as ICompany[]
   loading.value = false
 }
+
+
 </script>
