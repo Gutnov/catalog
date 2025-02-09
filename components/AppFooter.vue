@@ -5,19 +5,19 @@
         <div class="flex md:justify-between items-center justify-center">
           <div class="flex md:space-x-4 flex-col md:flex-row items-center">
             <NuxtLink
-              to="/privacy-policy"
+              to="/"
               class="text-gray-300 hover:text-white text-sm font-medium"
             >
               Политика конфиденциальности
             </NuxtLink>
             <NuxtLink
-              to="/terms-of-service"
+              to="/"
               class="text-gray-300 hover:text-white text-sm font-medium"
             >
               Условия использования
             </NuxtLink>
             <NuxtLink
-              to="/contact"
+              to="/"
               class="text-gray-300 hover:text-white text-sm font-medium"
             >
               Контакты
@@ -31,9 +31,9 @@
     </AppContainer>
   </footer>
 </template>
-  
+
 <script setup>
 </script>
-  
+
 <style scoped>
 </style>

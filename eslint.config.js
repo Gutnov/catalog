@@ -6,12 +6,12 @@ import pluginVue from 'eslint-plugin-vue'
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
-  {files: ['**/*.{js,mjs,cjs,ts,vue}']},
-  {languageOptions: { globals: {...globals.browser, ...globals.node} }},
+  { files: ['**/*.{js,mjs,cjs,ts,vue}'] },
+  { languageOptions: { globals: { ...globals.browser, ...globals.node } } },
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
   ...pluginVue.configs['flat/recommended'],
-  {files: ['**/*.vue'], languageOptions: {parserOptions: {parser: tseslint.parser}}},
+  { files: ['**/*.vue'], languageOptions: { parserOptions: { parser: tseslint.parser } } },
   {
     rules: {
       'no-console': ['warn', { allow: ['warn', 'error'] }],
@@ -36,7 +36,8 @@ export default [
           'registeredComponentsOnly': false,
           'ignores': []
         }
-      ]
+      ],
+      'object-curly-spacing': ['error', 'always']
     },
     languageOptions: {
       globals: {
@@ -47,7 +48,11 @@ export default [
         ref: 'readonly',
         computed: 'readonly',
         watch: 'readonly',
-        reactive: 'readonly'
+        reactive: 'readonly',
+        useNuxtApp: 'readonly',
+        $fetch: 'readonly',
+        'useRouter': 'readonly',
+        useRoute: 'readonly'
       }
     }
   }
