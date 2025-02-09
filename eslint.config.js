@@ -36,7 +36,8 @@ export default [
           'registeredComponentsOnly': false,
           'ignores': []
         }
-      ]
+      ],
+      'object-curly-spacing': ['error', 'always']
     },
     languageOptions: {
       globals: {
@@ -47,7 +48,9 @@ export default [
         ref: 'readonly',
         computed: 'readonly',
         watch: 'readonly',
-        reactive: 'readonly'
+        reactive: 'readonly',
+        useNuxtApp: 'readonly',
+        $fetch: 'readonly'
       }
     }
   }

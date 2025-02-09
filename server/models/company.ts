@@ -1,14 +1,11 @@
 import { Model, DataTypes } from 'sequelize'
 import sequelize from '~/server/models/db'
-
-interface ICompany {
-    id: number
-    name: string
-}
+import {type ICompany} from '@/types'
 
 export class Company extends Model<ICompany> {
   declare id: number
   declare name: string
+  declare createdYear: number
 }
 
 Company.init({
@@ -18,7 +15,12 @@ Company.init({
     autoIncrement: true
   },
   name: {
-    type: DataTypes.STRING
+    type: DataTypes.STRING(100)
+  },
+  createdYear: {
+    type: DataTypes.INTEGER,
+    defaultValue: 2025,
+    allowNull: false
   }
 }, {
   sequelize,

@@ -1,9 +1,11 @@
 <template>
-  <div class="layout min-h-screen grid overflow-auto">
-    <AppHeader />
-    <NuxtPage />
-    <AppFooter />
-  </div>
+  <VApp>
+    <div class="layout min-h-full grid">
+      <AppHeader />
+      <NuxtPage />
+      <AppFooter />
+    </div>
+  </VApp>
 </template>
 <script setup lang="ts">
 
