@@ -1,5 +1,6 @@
 import { Company } from '~/server/models/company'
 import { CompaniesQuery, type ICompany, SortDirections } from '@/dto'
+import { Op } from 'sequelize'
 import {
   DEFAULT_COMPANIES_LIMIT,
   DEFAULT_COMPANIES_PAGE,
@@ -25,7 +26,7 @@ const cleanQuery = (query: QueryObject): Required<CompaniesQuery> => {
 
   const where = {
     createdYear: {
-      between: [yearFrom, yearTo]
+      [Op.between]: [yearFrom, yearTo]
     }
   }
 
@@ -68,7 +69,8 @@ export default defineEventHandler(async (event): Promise<{companies: ICompany[],
     attributes: ['id', 'name', 'createdYear'],
     limit: query.limit,
     offset: (query.page - 1) * query.limit,
-    order: [[query.sortBy, query.sortDirection]]
+    order: [[query.sortBy, query.sortDirection]],
+    where: query.where
   })
 
   return {

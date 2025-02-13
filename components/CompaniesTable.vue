@@ -118,9 +118,7 @@ const headers: InstanceType<typeof VDataTableServer>['headers']= [
   { key: 'createdYear', title: 'Год основания', sortable: true, value: 'createdYear' }
 ]
 
-const loadItems = (payload: Options) => {
-  console.log('loadItems', payload)
-  
+const loadItems = (payload: Options) => {  
   const { sortBy, page, itemsPerPage } = payload
   tableFilters.value = payload
   const newQuery: CompaniesQuery = {}
@@ -134,7 +132,7 @@ const loadItems = (payload: Options) => {
   if (itemsPerPage !== DEFAULT_COMPANIES_LIMIT) {
     newQuery.limit = itemsPerPage
   }
-  
+
   newQuery.yearFrom = yearFrom.value
   newQuery.yearTo = yearTo.value
   

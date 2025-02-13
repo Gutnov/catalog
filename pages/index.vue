@@ -28,6 +28,8 @@ const getSearchParams = (): URLSearchParams => {
   const sortBy = route.query.sortBy
   const sortDirection = route.query.sortDirection
   const queryParams = new URLSearchParams()
+  const yearFrom = route.query.yearFrom
+  const yearTo = route.query.yearTo
   if (page && !Array.isArray(page)) {
     queryParams.append('page', page)
   }
@@ -40,6 +42,13 @@ const getSearchParams = (): URLSearchParams => {
   if (sortDirection && !Array.isArray(sortDirection)) {
     queryParams.append('sortDirection', sortDirection)
   }
+  if (yearFrom && !Array.isArray(yearFrom)) {
+    queryParams.append('yearFrom', yearFrom)
+  }
+  if (yearTo && !Array.isArray(yearTo)) {
+    queryParams.append('yearTo', yearTo)
+  }
+  
   return  queryParams
 }
 
