@@ -1,7 +1,8 @@
-import type { InferAttributes } from 'sequelize'
+import type { InferAttributes, WhereOptions } from 'sequelize'
 import type { Company } from '~/server/models/company'
 
 export type ICompany =  InferAttributes<Company>
+export type CompanyWhere = WhereOptions<ICompany>
 export const SortDirections = ['asc', 'desc'] as const
 
 export type CompaniesQuery = {
@@ -9,4 +10,5 @@ export type CompaniesQuery = {
     sortDirection?: typeof SortDirections[number];
     page?: number;
     limit?: number;
+    where?: CompanyWhere;
 }

@@ -1,5 +1,23 @@
 <template>
   <div class="companies-table">
+    <div class="grid gap-2 grid-cols-2 companies-table__filters mb-5">
+      <VSelect
+        v-model="yearFrom"
+        :items="availableYears"
+        label="Год от"
+        variant="outlined"
+        hide-details
+        single-line
+      />
+      <VSelect
+        v-model="yearTo"
+        :items="filteredYearsTo"
+        label="Год до"
+        variant="outlined"
+        hide-details
+        single-line
+      />
+    </div>
     <VDataTableServer
       v-model:items-per-page="itemsPerPage"
       v-model:page="page"
@@ -9,8 +27,20 @@
       :items-length="count"
       :loading="loading"
       item-value="name"
+      :search="search"
       @update:options="loadItems"
-    />
+    >
+      <template #top>
+        <VTextField
+          v-model="search"
+          label="Search"
+          prepend-inner-icon="mdi-magnify"
+          variant="outlined"
+          hide-details
+          single-line
+        />
+      </template>
+    </VDataTableServer>
   </div>
 </template>
 
@@ -20,10 +50,36 @@ import { type ICompany, type CompaniesQuery } from '@/dto'
 
 import {
   DEFAULT_COMPANIES_LIMIT,
-  DEFAULT_COMPANIES_PAGE
+  DEFAULT_COMPANIES_PAGE,
+  DEFAULT_MIN_YEAR
 } from '~/settings'
 
 type Options = InstanceType<typeof VDataTableServer>['$options']
+const search = ref('')
+const tableFilters = ref<Options>({})
+
+
+const yearFrom = ref<number>(DEFAULT_MIN_YEAR)
+const yearTo = ref<number>(new Date().getFullYear())
+
+watch(yearFrom, async (val) => {
+  console.log('yearFrom', val)
+  
+  if (yearFrom.value > yearTo.value) yearTo.value = yearFrom.value
+  await loadItems({ ...tableFilters.value, yearFrom: yearFrom.value, yearTo: yearTo.value } as Options)
+})
+
+watch(yearTo, async () => {
+  if (yearTo.value < yearFrom.value) yearFrom.value = yearTo.value
+  await loadItems({ ...tableFilters.value, yearFrom: yearFrom.value, yearTo: yearTo.value } as Options)
+})
+
+const availableYears = Array.from({ length: yearTo.value - DEFAULT_MIN_YEAR + 1 }, (_, i) => DEFAULT_MIN_YEAR + i)
+
+const filteredYearsTo = computed(() => {
+  if (!yearFrom.value) return availableYears
+  return availableYears.filter(year => year >= yearFrom.value)
+})
 
 defineProps<({
   list: Array<ICompany>
@@ -62,7 +118,11 @@ const headers: InstanceType<typeof VDataTableServer>['headers']= [
   { key: 'createdYear', title: 'Год основания', sortable: true, value: 'createdYear' }
 ]
 
-const loadItems = ({ page, itemsPerPage, sortBy }: Options) => {
+const loadItems = (payload: Options) => {
+  console.log('loadItems', payload)
+  
+  const { sortBy, page, itemsPerPage } = payload
+  tableFilters.value = payload
   const newQuery: CompaniesQuery = {}
   if (sortBy.length) {
     newQuery.sortBy = sortBy[0].key
@@ -74,6 +134,11 @@ const loadItems = ({ page, itemsPerPage, sortBy }: Options) => {
   if (itemsPerPage !== DEFAULT_COMPANIES_LIMIT) {
     newQuery.limit = itemsPerPage
   }
+  
+  newQuery.yearFrom = yearFrom.value
+  newQuery.yearTo = yearTo.value
+  
+
   router.push({ query: { ...newQuery } })
 }
 </script>

@@ -4,7 +4,8 @@ import {
   DEFAULT_COMPANIES_LIMIT,
   DEFAULT_COMPANIES_PAGE,
   DEFAULT_COMPANIES_SORT_COLUMN,
-  DEFAULT_COMPANIES_SORT_DIRECTION, MAX_COMPANIES_LIMIT
+  DEFAULT_COMPANIES_SORT_DIRECTION, MAX_COMPANIES_LIMIT,
+  DEFAULT_MIN_YEAR
 } from '~/settings'
 import { QueryObject } from 'ufo'
 
@@ -12,6 +13,21 @@ const cleanQuery = (query: QueryObject): Required<CompaniesQuery> => {
   const page = query.page && !isNaN(Number(query.page))
     ? Number(query.page)
     : DEFAULT_COMPANIES_PAGE
+  let yearFrom = query.yearFrom && !isNaN(Number(query.yearFrom))
+    ? Number(query.yearFrom)
+    : DEFAULT_MIN_YEAR
+  let yearTo = query.yearTo && !isNaN(Number(query.yearTo))
+    ? Number(query.yearTo)
+    : new Date().getFullYear()
+  if (yearFrom > yearTo) {
+    [yearFrom, yearTo] = [DEFAULT_MIN_YEAR, new Date().getFullYear()]
+  }
+
+  const where = {
+    createdYear: {
+      between: [yearFrom, yearTo]
+    }
+  }
 
   const limit = query.limit && !isNaN(Number(query.limit))
     ? Number(query.limit) > 0 && Number(query.limit) <= MAX_COMPANIES_LIMIT
@@ -40,12 +56,13 @@ const cleanQuery = (query: QueryObject): Required<CompaniesQuery> => {
   const sortDirection = query.sortDirection && isSortDirection(query.sortDirection)
     ? query.sortDirection
     : DEFAULT_COMPANIES_SORT_DIRECTION
-  return { page, limit, sortBy, sortDirection }
+  return { page, limit, sortBy, sortDirection, where }
 }
 
 export default defineEventHandler(async (event): Promise<{companies: ICompany[], totalCount: number}> => {
   const rawQuery = getQuery(event)
   const query = cleanQuery(rawQuery)
+  
 
   const { rows, count } = await Company.findAndCountAll({
     attributes: ['id', 'name', 'createdYear'],
