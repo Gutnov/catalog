@@ -1,33 +1,60 @@
 import { Company } from '~/server/models/company'
-import { CompaniesQuery, type ICompany, SortDirections } from '@/dto'
-import { Op } from 'sequelize'
+import { CompaniesQueryDto, type CompanyDto, SortDirections } from '@/dto'
+import { Op, WhereOptions } from 'sequelize'
 import {
   DEFAULT_COMPANIES_LIMIT,
   DEFAULT_COMPANIES_PAGE,
   DEFAULT_COMPANIES_SORT_COLUMN,
-  DEFAULT_COMPANIES_SORT_DIRECTION, MAX_COMPANIES_LIMIT,
-  DEFAULT_MIN_YEAR
+  DEFAULT_COMPANIES_SORT_DIRECTION, MAX_COMPANIES_LIMIT
+  // DEFAULT_MIN_YEAR
 } from '~/settings'
 import { QueryObject } from 'ufo'
 
-const cleanQuery = (query: QueryObject): Required<CompaniesQuery> => {
+type CompanyDbQuery = Required<Pick<CompaniesQueryDto, 'limit'|'page'|'sortBy'|'sortDirection'>>
+    & {where: WhereOptions<Company>}
+
+const cleanQuery = (query: QueryObject): CompanyDbQuery => {
   const page = query.page && !isNaN(Number(query.page))
     ? Number(query.page)
     : DEFAULT_COMPANIES_PAGE
-  let yearFrom = query.yearFrom && !isNaN(Number(query.yearFrom))
+  const yearFrom = query.yearFrom && !isNaN(Number(query.yearFrom))
     ? Number(query.yearFrom)
-    : DEFAULT_MIN_YEAR
-  let yearTo = query.yearTo && !isNaN(Number(query.yearTo))
+    : undefined
+  const yearTo = query.yearTo && !isNaN(Number(query.yearTo))
     ? Number(query.yearTo)
-    : new Date().getFullYear()
-  if (yearFrom > yearTo) {
-    [yearFrom, yearTo] = [DEFAULT_MIN_YEAR, new Date().getFullYear()]
+    : undefined
+  if (yearFrom && yearTo && yearFrom > yearTo){
+    throw new Error(`Invalid year query. yearFrom '${yearFrom}' is greater than '${yearTo}'` )
   }
 
-  const where = {
-    createdYear: {
-      [Op.between]: [yearFrom, yearTo]
+  let where : WhereOptions<Company> = {}
+  if (yearFrom && yearTo) {
+    where = { ...where, createdYear: {
+      [Op.and]: [
+        { [Op.gte]: yearFrom },
+        { [Op.lte]: yearTo }
+      ]
     }
+    }
+  } else if (yearFrom) {
+    where = { ...where, createdYear: { [Op.gte]: yearFrom } }
+  } else if (yearTo) {
+    where = { ...where, createdYear: { [Op.lte]: yearTo } }
+  }
+
+  // const where: WhereOptions<Company> = {
+  //   createdYear: {
+  //     ...(yearFrom && { [Op.gt]: yearFrom }),
+  //     ...(yearTo && { [Op.lt]: yearTo })
+  //   }
+  // }
+
+  const search = query.search && typeof query.search === 'string'
+    ? query.search
+    : null
+
+  if (search) {
+    where.name = { [Op.substring]: search }
   }
 
   const limit = query.limit && !isNaN(Number(query.limit))
@@ -36,7 +63,7 @@ const cleanQuery = (query: QueryObject): Required<CompaniesQuery> => {
       : DEFAULT_COMPANIES_LIMIT
     : DEFAULT_COMPANIES_LIMIT
 
-  const isCompanyField = (key: unknown): key is keyof ICompany => {
+  const isCompanyField = (key: unknown): key is keyof CompanyDto => {
     if (typeof key !== 'string') {
       return false
     }
@@ -60,10 +87,9 @@ const cleanQuery = (query: QueryObject): Required<CompaniesQuery> => {
   return { page, limit, sortBy, sortDirection, where }
 }
 
-export default defineEventHandler(async (event): Promise<{companies: ICompany[], totalCount: number}> => {
+export default defineEventHandler(async (event): Promise<{companies: CompanyDto[], totalCount: number}> => {
   const rawQuery = getQuery(event)
   const query = cleanQuery(rawQuery)
-  
 
   const { rows, count } = await Company.findAndCountAll({
     attributes: ['id', 'name', 'createdYear'],
@@ -74,7 +100,7 @@ export default defineEventHandler(async (event): Promise<{companies: ICompany[],
   })
 
   return {
-    companies: rows.map(row => ({ id: row.id, name: row.name, createdYear: row.createdYear })) as ICompany[],
+    companies: rows.map(row => ({ id: row.id, name: row.name, createdYear: row.createdYear })) as CompanyDto[],
     totalCount: count
   }
 })
