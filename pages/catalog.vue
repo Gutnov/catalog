@@ -1,13 +1,29 @@
 <template>
   <div>
-    <AppCatalog :images="images" />
+    <ul>
+      <li
+        v-for="user in users"
+        :key="user.id"
+      >
+        {{ user.name }}
+      </li>
+    </ul>
   </div>
 </template>
 
 <script lang="ts" setup>
-const res = await fetch('https://fakerapi.it/api/v2/images?_quantity=10&_type=any&_height=300')
-const images = await res.json().then((body) => body.data)
 
+const { data, error } = await useAsyncData(
+  'users',
+  async () => {
+    if (process.server) {
+      const { getUsers } = await import('~/server/utils/users')
+      return getUsers()
+    }
+    return []
+  }
+)
+const users = data.value
 </script>
 
 <style>

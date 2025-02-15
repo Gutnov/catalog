@@ -58,7 +58,7 @@ const getSearchParams = (): URLSearchParams => {
 }
 
 const { data } = await useFetch(`/api/companies?${getSearchParams().toString()}`)
-const { data: filterYears } = await useFetch('/api/companies-filter')
+// const { data: filterYears } = await useFetch('/api/companies-filter')
 
 companiesList.value = data.value?.companies as CompanyDto[]
 count.value = data.value?.totalCount as number
