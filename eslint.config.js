@@ -52,7 +52,8 @@ export default [
         useNuxtApp: 'readonly',
         $fetch: 'readonly',
         'useRouter': 'readonly',
-        useRoute: 'readonly'
+        useRoute: 'readonly',
+        onMounted: 'readonly'
       }
     }
   }

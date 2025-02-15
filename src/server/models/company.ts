@@ -1,5 +1,5 @@
 import { Model, DataTypes, InferAttributes, InferCreationAttributes } from 'sequelize'
-import sequelize from '~/server/models/db'
+import sequelize from '@/server/models/db'
 
 export class Company extends Model<InferAttributes<Company>, InferCreationAttributes<Company>> {
   declare id: number

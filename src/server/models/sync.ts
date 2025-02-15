@@ -1,5 +1,5 @@
-import {Company} from '~/server/models/company'
-import sequelize from '~/server/models/db'
+import { Company } from '@/server/models/company'
+import sequelize from '@/server/models/db'
 
 
 const runDbSync = async () => {

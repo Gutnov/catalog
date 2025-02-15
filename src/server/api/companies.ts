@@ -1,4 +1,4 @@
-import { Company } from '~/server/models/company'
+import { Company } from '@/server/models/company'
 import { CompaniesQueryDto, type CompanyDto, SortDirections } from '@/dto'
 import { Op, WhereOptions } from 'sequelize'
 import {
@@ -7,7 +7,7 @@ import {
   DEFAULT_COMPANIES_SORT_COLUMN,
   DEFAULT_COMPANIES_SORT_DIRECTION, MAX_COMPANIES_LIMIT
   // DEFAULT_MIN_YEAR
-} from '~/settings'
+} from '@/settings'
 import { QueryObject } from 'ufo'
 
 type CompanyDbQuery = Required<Pick<CompaniesQueryDto, 'limit'|'page'|'sortBy'|'sortDirection'>>
