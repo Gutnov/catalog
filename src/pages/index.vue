@@ -8,6 +8,7 @@
         :list="companiesList"
         :count="count"
         :loading="loading"
+        :year-filter="yearFilter"
         @change="changePage"
       />
     </AppContainer>
@@ -17,10 +18,12 @@
 <script lang="ts" setup>
 import { type CompanyDto } from '@/dto'
 const route = useRoute()
+import { type YearFitlter } from '@/dto'
 
 const companiesList = ref<CompanyDto[]>([])
 const loading = ref(false)
 const count = ref(0)
+const yearFilter = ref<YearFitlter[]>()
 
 const getSearchParams = (): URLSearchParams => {
   const page = route.query.page
@@ -31,6 +34,7 @@ const getSearchParams = (): URLSearchParams => {
   const yearFrom = route.query.yearFrom
   const yearTo = route.query.yearTo
   const search = route.query.search
+
   if (search && typeof search === 'string' && search !== '') {
     queryParams.append('search', search)
   }
@@ -57,12 +61,12 @@ const getSearchParams = (): URLSearchParams => {
   return  queryParams
 }
 
-const { data } = await useFetch(`/api/companies?${getSearchParams().toString()}`)
-const { data: filterYears } = await useFetch('/api/companies-filter')
-
-companiesList.value = data.value?.companies as CompanyDto[]
-count.value = data.value?.totalCount as number
-
+const { data: companiesListRes } = await useFetch(`/api/companies?${getSearchParams().toString()}`)
+const { data: yearFilterRes } = await useFetch('/api/companies-filter')
+yearFilter.value = yearFilterRes.value as YearFitlter[]
+companiesList.value = companiesListRes.value?.companies as CompanyDto[]
+count.value = companiesListRes.value?.totalCount as number
+  
 watch(route, async () => {
   const queryParams = getSearchParams()
   await changePage(queryParams)

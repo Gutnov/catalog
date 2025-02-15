@@ -1,7 +1,12 @@
 import type { InferAttributes } from 'sequelize'
-import type { Company } from '~/server/models/company'
+import type { Company } from '@/server/models/company'
 
 export type CompanyDto =  InferAttributes<Company>
+
+export type YearFitlter = {
+  value: number,
+  title: string
+}
 export const SortDirections = ['asc', 'desc'] as const
 
 export type CompaniesQueryDto = {
