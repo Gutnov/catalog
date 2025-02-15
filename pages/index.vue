@@ -15,10 +15,10 @@
 </template>
 
 <script lang="ts" setup>
-import { type ICompany } from '@/dto'
+import { type CompanyDto } from '@/dto'
 const route = useRoute()
 
-const companiesList = ref<ICompany[]>([])
+const companiesList = ref<CompanyDto[]>([])
 const loading = ref(false)
 const count = ref(0)
 
@@ -28,6 +28,12 @@ const getSearchParams = (): URLSearchParams => {
   const sortBy = route.query.sortBy
   const sortDirection = route.query.sortDirection
   const queryParams = new URLSearchParams()
+  const yearFrom = route.query.yearFrom
+  const yearTo = route.query.yearTo
+  const search = route.query.search
+  if (search && typeof search === 'string' && search !== '') {
+    queryParams.append('search', search)
+  }
   if (page && !Array.isArray(page)) {
     queryParams.append('page', page)
   }
@@ -40,12 +46,21 @@ const getSearchParams = (): URLSearchParams => {
   if (sortDirection && !Array.isArray(sortDirection)) {
     queryParams.append('sortDirection', sortDirection)
   }
+  if (yearFrom && !Array.isArray(yearFrom)) {
+    queryParams.append('yearFrom', yearFrom)
+  }
+  if (yearTo && !Array.isArray(yearTo)) {
+    queryParams.append('yearTo', yearTo)
+  }
+
+
   return  queryParams
 }
 
 const { data } = await useFetch(`/api/companies?${getSearchParams().toString()}`)
+const { data: filterYears } = await useFetch('/api/companies-filter')
 
-companiesList.value = data.value?.companies as ICompany[]
+companiesList.value = data.value?.companies as CompanyDto[]
 count.value = data.value?.totalCount as number
 
 watch(route, async () => {
@@ -57,7 +72,7 @@ const changePage = async (queryParams: URLSearchParams) => {
   loading.value = true
   const { companies, totalCount }  = await $fetch(`/api/companies?${queryParams.toString()}`)
   count.value = totalCount
-  companiesList.value = companies as ICompany[]
+  companiesList.value = companies as CompanyDto[]
   loading.value = false
 }
 </script>

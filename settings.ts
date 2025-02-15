@@ -3,3 +3,4 @@ export const DEFAULT_COMPANIES_PAGE = 1
 export const DEFAULT_COMPANIES_SORT_COLUMN = 'id'
 export const DEFAULT_COMPANIES_SORT_DIRECTION = 'asc'
 export const MAX_COMPANIES_LIMIT = 500
+export const DEFAULT_MIN_YEAR = 1800
